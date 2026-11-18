@@ -116,6 +116,7 @@ public class TokenParserTests
 
         result.Should().BeEquivalentTo(expected, o => o
             .PreferringRuntimeMemberTypes()
+            .WithStrictTyping()
             .WithStrictOrdering());
     }
 }

@@ -1,6 +1,6 @@
 namespace Markdown.Tokens.Lexing;
 
-public sealed record SymbolDefinition(string Pattern, bool LineStartOnly = false);
+public sealed record Symbol(string Pattern, bool LineStartOnly = false);
 
 public static class MarkdownSyntax
 {
@@ -10,7 +10,7 @@ public static class MarkdownSyntax
     public const string Underscore = "_";
 
 
-    public static readonly IReadOnlyList<SymbolDefinition> Symbols =
+    public static readonly IReadOnlyList<Symbol> Symbols =
     [
         new(HeaderPrefix, true),
         new(DoubleUnderscore),

@@ -61,7 +61,7 @@ public static class Lexer
                && cursor + 1 < line.Length
                && MarkdownSyntax.IsEscapable(line[cursor + 1]);
 
-        private static bool TryMatchSymbol(string line, int cursor, out SymbolDefinition symbol)
+        private static bool TryMatchSymbol(string line, int cursor, out Symbol symbol)
         {
             foreach (var candidate in MarkdownSyntax.Symbols)
             {
