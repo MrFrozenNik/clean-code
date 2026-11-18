@@ -1,12 +1,10 @@
-using NUnit.Framework;
-using FluentAssertions;
 using System.Collections;
+using FluentAssertions;
 using Markdown.Nodes;
-using Markdown.Nodes.Transformers;
 using Markdown.Tokens;
-using Markdown.Transformers;
+using NUnit.Framework;
 
-namespace Markdown.Tests;
+namespace Markdown.Tests.TokenParser;
 
 [TestFixture]
 public class TokenParserTests
@@ -112,7 +110,7 @@ public class TokenParserTests
     [TestCaseSource(nameof(HappyPathCases))]
     public void StringTokenizer_ReturnsExpectedArray(IReadOnlyList<Token> tokens, IReadOnlyList<Node> expected)
     {
-        var result = TokenParser.Parse(tokens);
+        var result = Nodes.Transformers.TokenParser.Parse(tokens);
 
         result.Should().BeEquivalentTo(expected, o => o
             .PreferringRuntimeMemberTypes()
