@@ -9,6 +9,7 @@ public static class TokenParser
     private static readonly IReadOnlyList<IBlockRule> BlockRules =
     [
         new HeaderRule(),
+        new ListItemRule(),
         new ParagraphRule(),
     ];
 
@@ -35,6 +36,7 @@ public static class TokenParser
     public static IReadOnlyList<Node> Parse(IReadOnlyList<Token> tokens)
     {
         var nodes = new List<BlockNode>();
+        var listBuffer = new List<UnorderedListItemBlock>();
 
         foreach (var tokenLine in tokens.SplitByParagraphBreak())
         {
@@ -42,10 +44,29 @@ public static class TokenParser
 
             var inlineNodes = ParseTokenLine(blockRule.StripTokenLine(tokenLine));
             var block = blockRule.Create(inlineNodes);
+
+            if (block is UnorderedListItemBlock listItem)
+            {
+                listBuffer.Add(listItem);
+                continue;
+            }
+
+            FlushListItems(listBuffer, nodes);
             nodes.Add(block);
         }
 
+        FlushListItems(listBuffer, nodes);
+
         return nodes;
+    }
+
+    private static void FlushListItems(List<UnorderedListItemBlock> listBuffer, List<BlockNode> nodes)
+    {
+        if (listBuffer.Count > 0)
+        {
+            nodes.Add(new UnorderedListBlock([.. listBuffer]));
+            listBuffer.Clear();
+        }
     }
 
     private static IReadOnlyList<TextNode> ParseTokenLine(IReadOnlyList<Token> tokenLine)

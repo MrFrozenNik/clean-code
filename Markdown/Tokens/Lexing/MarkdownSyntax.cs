@@ -6,6 +6,8 @@ public static class MarkdownSyntax
 {
     public const string HeaderPrefix = "# ";
     public const string ParagraphBreaker = "\n";
+    public const string ListItemPrefix = "- ";
+    
     public const string DoubleUnderscore = "__";
     public const string Underscore = "_";
 
@@ -13,6 +15,7 @@ public static class MarkdownSyntax
     public static readonly IReadOnlyList<Symbol> Symbols =
     [
         new(HeaderPrefix, true),
+        new(ListItemPrefix, true),
         new(DoubleUnderscore),
         new(Underscore),
     ];

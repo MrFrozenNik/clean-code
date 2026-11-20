@@ -9,6 +9,7 @@ public sealed record TokenType(string Name)
     public static readonly TokenType DoubleUnderscore = new("double_underscore");
     public static readonly TokenType HeaderMarker = new("header_marker");
     public static readonly TokenType ParagraphBreak = new("paragraph_break");
+    public static readonly TokenType ListItemMarker = new("list_item_marker");
 }
 
 public abstract record Token(TokenType Type, string Value);
@@ -18,6 +19,11 @@ public sealed record TextToken(string Value) : Token(TokenType.Text, Value);
 public sealed record HeaderMarkerToken() : Token(TokenType.HeaderMarker, MarkdownSyntax.HeaderPrefix);
 
 public sealed record ParagraphBreakToken() : Token(TokenType.ParagraphBreak, MarkdownSyntax.ParagraphBreaker);
+
+public sealed record ListItemMarkerToken() : Token(TokenType.ListItemMarker, MarkdownSyntax.ListItemPrefix);
+
+
+
 
 public abstract record PairedToken(TokenType Type, string Value, bool CanOpen, bool CanClose, bool IsInsideWord)
     : Token(Type, Value);

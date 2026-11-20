@@ -63,7 +63,8 @@ public static class StringTokenizer
 {
     private static readonly TokenBuilder Builder = new([
         new HeaderInterpreter(),
-        new UnderscoreInterpreter()
+        new UnderscoreInterpreter(),
+        new ListItemInterpreter(),
     ]);
 
     public static IReadOnlyList<Token> Tokenize(string text)

@@ -22,11 +22,13 @@ public static class HtmlDocument
         HeaderBlock header => CreateElement(document, "h1", header.Children),
         Strong strong => CreateElement(document, "strong", strong.Children),
         Emphasis emphasis => CreateElement(document, "em", [new Text(emphasis.Value)]),
+        UnorderedListBlock list => CreateElement(document, "ul", list.Items),
+        UnorderedListItemBlock listItem => CreateElement(document, "li", listItem.Children),
         _ => throw new NotSupportedException($"Unable to identify node {node.GetType().Name}")
     };
     
     private static IElement CreateElement(
-        IDocument document, string tag, IReadOnlyList<TextNode> children)
+        IDocument document, string tag, IReadOnlyList<Nodes.Node> children)
     {
         var element = document.CreateElement(tag);
 

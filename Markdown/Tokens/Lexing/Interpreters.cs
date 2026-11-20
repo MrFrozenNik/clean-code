@@ -44,6 +44,14 @@ public sealed class HeaderInterpreter : ISymbolInterpreter
     public Token Interpret(IReadOnlyList<RawSegment> segments, int index) => new HeaderMarkerToken();
 }
 
+public sealed class ListItemInterpreter : ISymbolInterpreter
+{
+    public bool CanHandle(SymbolSegment segment) => segment.Symbol == MarkdownSyntax.ListItemPrefix;
+
+    public Token Interpret(IReadOnlyList<RawSegment> segments, int index) => new ListItemMarkerToken();
+}
+
+
 
 public static class SegmentNeighbors
 {

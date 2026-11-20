@@ -130,7 +130,40 @@ public class MarkdownTests
                 .SetName("Delimiters: space before closing underscore");
         }
     }
+    
+    public static IEnumerable UnorderedListCases
+    {
+        get
+        {
+            yield return new TestCaseData<string, string>(
+                    "- первый\n- второй\n- третий",
+                    "<ul><li>первый</li><li>второй</li><li>третий</li></ul>")
+                .SetName("List: consecutive items form one list");
 
+            yield return new TestCaseData<string, string>(
+                    "- первый\n\n- второй",
+                    "<ul><li>первый</li></ul><p></p><ul><li>второй</li></ul>")
+                .SetName("List: empty paragraph separates two lists");
+
+            yield return new TestCaseData<string, string>(
+                    "- пункт\n# Заголовок\nАбзац",
+                    "<ul><li>пункт</li></ul><h1>Заголовок</h1><p>Абзац</p>")
+                .SetName("List: followed by a heading and a paragraph");
+
+            yield return new TestCaseData<string, string>(
+                    "- __жирный _курсив_ текст__\n- # просто текст",
+                    "<ul><li><strong>жирный <em>курсив</em> текст</strong></li>" +
+                    "<li># просто текст</li></ul>")
+                .SetName("List: nested emphasis works and hash stays literal");
+
+            yield return new TestCaseData<string, string>(
+                    "- пункт\n\\- обычный текст",
+                    "<ul><li>пункт</li></ul><p>- обычный текст</p>")
+                .SetName("List: escaped marker starts a plain paragraph");
+        }
+    }
+    
+    [TestCaseSource(nameof(UnorderedListCases))]
     [TestCaseSource(nameof(UnpairedDelimiterCases))]
     [TestCaseSource(nameof(EscapingCases))]
     [TestCaseSource(nameof(NestedEmphasisCases))]

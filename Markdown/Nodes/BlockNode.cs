@@ -6,4 +6,6 @@ internal record TextBlock(IReadOnlyList<TextNode> Children) : BlockNode;
 
 internal record HeaderBlock(IReadOnlyList<TextNode> Children) : BlockNode;
 
-//internal record UnorderedListItemBlock(IReadOnlyList<TextNode> Children) : BlockNode;
+internal record UnorderedListItemBlock(IReadOnlyList<TextNode> Children) : BlockNode;
+
+internal record UnorderedListBlock(IReadOnlyList<UnorderedListItemBlock> Items) : BlockNode;
