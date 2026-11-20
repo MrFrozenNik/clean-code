@@ -1,3 +1,4 @@
+using System.Text;
 using Markdown.Nodes.Rules;
 using Markdown.Tokens;
 
@@ -49,15 +50,44 @@ public static class TokenParser
 
     private static IReadOnlyList<TextNode> ParseTokenLine(IReadOnlyList<Token> tokenLine)
     {
-        var inlineNodes = new List<TextNode>();
-        foreach (var token in tokenLine)
+        var pairs = tokenLine.FindPairs(InlineRules);
+
+        return ParseRange(0, tokenLine.Count);
+
+
+        IReadOnlyList<TextNode> ParseRange(int startIndex, int endExclusive)
         {
-            if (token is TextToken textToken)
+            var buffer = new StringBuilder();
+            var nodes = new List<TextNode>();
+
+
+            for (var i = startIndex; i < endExclusive; i++)
             {
-                inlineNodes.Add(new Text(textToken.Value));
+                if (pairs.TryGetValue(i, out var pairEnd) && HasContent(i, pairEnd))
+                {
+                    FlushBuffer();
+                    buffer.Clear();
+                    var insideNodes = ParseRange(i + 1, pairEnd.CloseIndex);
+                    nodes.Add(pairEnd.Rule.Create(insideNodes));
+                    i = pairEnd.CloseIndex;
+                    continue;
+                }
+
+                buffer.Append(tokenLine[i].Value);
+            }
+
+            FlushBuffer();
+            return nodes;
+
+
+            void FlushBuffer()
+            {
+                if (buffer.Length > 0)
+                    nodes.Add(new Text(buffer.ToString()));
             }
         }
-
-        return inlineNodes;
     }
+
+
+    private static bool HasContent(int pairStart, PairEnd pairEnd) => pairEnd.CloseIndex > pairStart + 1;
 }

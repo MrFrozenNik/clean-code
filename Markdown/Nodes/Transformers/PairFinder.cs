@@ -3,12 +3,14 @@ using Markdown.Tokens;
 
 namespace Markdown.Nodes.Transformers;
 
+public readonly record struct PairEnd(int CloseIndex, IPairingRule Rule);
+
 public static class PairFinder
 {
-    public static Dictionary<int, int> FindPairs(this IReadOnlyList<Token> tokens,
+    public static Dictionary<int, PairEnd> FindPairs(this IReadOnlyList<Token> tokens,
         IReadOnlyList<IPairingRule> inlineRules)
     {
-        var pairs = new Dictionary<int, int>();
+        var pairs = new Dictionary<int, PairEnd>();
         var openerIndexes = new Stack<int>();
 
         for (var tokenIndex = 0; tokenIndex < tokens.Count; tokenIndex++) {
@@ -39,7 +41,7 @@ public static class PairFinder
                     continue;
 
                 openerIndexes.Pop();
-                pairs[openerIndex] = tokenIndex;
+                pairs[openerIndex] = new PairEnd(tokenIndex, rule);
             }
 
             if (token.CanOpen && CanOpenInside(tokens, openerIndexes, inlineRules)) openerIndexes.Push(tokenIndex);
