@@ -1,6 +1,5 @@
 using FluentAssertions;
 using Markdown.Tokens;
-using Markdown.Transformers;
 using NUnit.Framework;
 using System.Collections;
 
