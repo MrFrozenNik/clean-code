@@ -9,40 +9,41 @@ public static class PairFinder
         IReadOnlyList<IPairingRule> inlineRules)
     {
         var pairs = new Dictionary<int, int>();
+        var openerIndexes = new Stack<int>();
 
-        var openerTokenIndexes = new Stack<int>();
+        for (var tokenIndex = 0; tokenIndex < tokens.Count; tokenIndex++) {
+            if (tokens[tokenIndex] is not PairedToken token)
+                continue;
 
-
-        for (var i = 0; i < tokens.Count; i++)
-        {
-            if (tokens[i] is not PairedToken token) continue;
-
-            if (token.CanClose && TryGetPairToken(tokens, openerTokenIndexes, i, out var close))
+            if (token.CanClose &&
+                TryGetPairToken(tokens, openerIndexes, tokenIndex, out var closer))
             {
-                var skipped = false;
+                var openerIndex = openerIndexes.Peek();
 
-                while (tokens[openerTokenIndexes.Peek()].Type != close.Type)
+                if (tokens[openerIndex].Type != closer.Type)
                 {
-                    openerTokenIndexes.Pop();
-                    skipped = true;
+                    do
+                    {
+                        openerIndexes.Pop();
+                    }
+                    while (tokens[openerIndexes.Peek()].Type != closer.Type);
+
+                    continue;
                 }
 
-                if (skipped) continue;
+                var opener = (PairedToken)tokens[openerIndex];
+                var content = tokens.Skip(openerIndex + 1).Take(tokenIndex - openerIndex + 1).ToArray();
 
-                var openIndex = openerTokenIndexes.Peek();
-                var open = (PairedToken)tokens[openIndex];
-
-                var content = tokens.Skip(openIndex + 1).Take(i - openIndex + 1).ToArray();
-
-                if (!close.GetRuleFor(inlineRules).CanPair(open, close, content))
+                var rule = closer.GetRuleFor(inlineRules);
+                if (!rule.CanPair(opener, closer, content))
                     continue;
-                openerTokenIndexes.Pop();
-                pairs[openIndex] = i;
+
+                openerIndexes.Pop();
+                pairs[openerIndex] = tokenIndex;
             }
 
-            if (token.CanOpen && CanOpenInside(tokens, openerTokenIndexes, inlineRules)) openerTokenIndexes.Push(i);
+            if (token.CanOpen && CanOpenInside(tokens, openerIndexes, inlineRules)) openerIndexes.Push(tokenIndex);
         }
-
 
         return pairs;
     }
